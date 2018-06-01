@@ -1,0 +1,42 @@
+body{
+	background: white;
+	color: black;
+        font-family: "Lucida Console", Monaco, monospace;
+        font-size: 60px;
+        font-weight: bold;
+
+}
+
+input{
+        width: 90%;
+}
+
+div{
+        width: 300px;
+}
+
+.widget{
+        background-color: #CCCCCC;
+        outline-style: solid;
+        margin: 10px;
+        text-align: center;
+}
+
+.flex-container{
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+	flex-flow: row wrap;
+}
+
+.button{
+        background-color: #999999;
+	text-align: center;
+	border: none;
+        width: 200px;
+	height: 50px;
+}
+
+.button:hover{
+	background-color: #BBBBBB;
+}

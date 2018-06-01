@@ -1,0 +1,48 @@
+from flask import Flask, render_template, redirect
+from flask import request
+from time import sleep
+import time
+import smbus
+
+bus = smbus.SMBus(3)
+
+app = Flask(__name__)
+
+#@app.route('/', methods=['POST'])
+#def form_post():
+#    if request.method == 'POST':
+#        batlo = request.form['batlo']
+#        cmd1 = '{"batlo":"' + batlo + '"}'
+#        bathi = request.form['bathi']
+#        cmd2 = '{"bathi":"' + bathi + '"}'
+#        for c in cmd1:
+#            bus.write_byte(0x77, ord(c))
+##            sleep(.01) 
+#        for c in cmd2:
+#            bus.write_byte(0x77, ord(c))
+#            sleep(.01) 
+#        return render_template('index.html')
+
+@app.route('/batlo', methods=['POST'])
+def set_batlo():
+    batlo = request.form['batlo']
+    cmd1 = '{"batlo":"' + batlo + '"}'
+    for c in cmd1:
+        bus.write_byte(0x77, ord(c))
+        sleep(.01) 
+    return render_template('index.html', batlo = batlo)
+@app.route('/bathi', methods=['POST'])
+def set_bathi():
+    bathi = request.form['bathi']
+    cmd2 = '{"bathi":"' + bathi + '"}'
+    for c in cmd2:
+        bus.write_byte(0x77, ord(c))
+        sleep(.01) 
+    return render_template('index.html', bathi = bathi)
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0')
+
