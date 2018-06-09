@@ -15,7 +15,7 @@ class BatHiForm(FlaskForm):
     submit = SubmitField('SET')
 
 class CmdForm(FlaskForm):
-    cmdval = StringField('cmd', validators=[DataRequired()])
+    cmdval = StringField('CMD', validators=[DataRequired()])
     submit = SubmitField('SEND')
 
 

@@ -4,30 +4,62 @@
   </head>
   <body>
     <div class="flex-container">
-    <div class="widget">
+    <div class="form_widget" id="f1">
         <form action="" method="POST">
         {{ batloform.hidden_tag() }}
-        {{ batloform.batloval.label }}<br>
-        {{ batloform.batloval(size=32) }}
-        {{ batloform.submit()}}
+        <p>{{ batloform.batloval.label }}</p>
+        <p>{{ batloform.batloval(size=32) }}</P>
+        <p>{{ batloform.submit()}}</p>
         </form>
     </div>
-        <div class="widget">
+        <div class="form_widget" id="f2">
         <form action="" method="POST">
         {{ bathiform.hidden_tag() }}
-        {{ bathiform.bathival.label }}<br>
-        {{ bathiform.bathival(size=32) }}
-        {{ bathiform.submit()}}
+        <p>{{ bathiform.bathival.label }}</p>
+        <p>{{ bathiform.bathival(size=32) }}</p>
+        <p>{{ bathiform.submit()}}</p>
         </form>
     </div>
-    <div class="widget">
+    <div class="form_widget" id="f3">
         <form action="" method="POST">
         {{ cmdform.hidden_tag() }}
-        {{ cmdform.cmdval.label }}<br>
-        {{ cmdform.cmdval(size=32) }}
-        {{ cmdform.submit()}}
+        <p>{{ cmdform.cmdval.label }}</p>
+        <p>{{ cmdform.cmdval(size=22) }}</p>
+        <p>{{ cmdform.submit()}}</p>
         </form>
     </div>
+    <div class="form_widget" id="f4">
+        <p>TIME</p>
+        <p id="time"></p>    
+    </div>
 </div>
-  </body>
+
+<script type=text/javascript src="{{url_for('static', filename='jquery-3.3.1.min.js') }}"></script>
+
+<script type=text/javascript>
+	$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+</script>
+
+<script type=text/javascript>
+function update_time() {
+            $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+            $.getJSON($SCRIPT_ROOT+"/_get_time",
+                function(data) {
+                    $("#time").text(data.time)
+                });
+        }
+update_time();
+</script>
+<script type=text/javascript>
+	var hexArray = ['#993366','#336699','#5A60C4', '#CC3333']
+	function randomColor(x){ return x[Math.floor(Math.random() * x.length)]}
+	$(".form_widget").css("background",randomColor(hexArray))
+</script>
+
+<script type=text/javascript>
+	var text = document.getElementById("time");
+        $( text ).html("000");
+</script>
+
+</body>
 </html>
