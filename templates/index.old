@@ -1,0 +1,66 @@
+<html>
+  <head>
+    <link rel="stylesheet" href='/static/style.css'/>
+  </head>
+  <body>
+    <div class="flex-container">
+
+    <div class="widget">
+
+      <form method="post" action="/batlo">
+        <label for="in1">BAT_LO</label>
+        <input id="in1" name="batlo" type="range" min="1" max="100" value={{batlo}} oninput="y.value=parseInt(in1.value)">
+        <output for="in1" name="y" id="out1">000%</output>
+        <input class="button" type="submit" value="SET">
+      </form>
+
+    </div>
+
+    <div class="widget">
+
+      <form method="post" action="/bathi">
+        <label for="in2">BAT_HI</label>
+        <input id="in2" name="bathi" type="range" min="1" max="100" value={{bathi}} oninput="x.value=parseInt(in2.value)">
+        <output for="in2" name="x" id="out2">000%</output>
+        <input class="button" type="submit" value="SET">
+      </form>
+
+    </div>
+
+    <div class="widget">
+        <form action="" method="POST">
+        {{ batloform.hidden_tag() }}
+        {{ batloform.batloval.label }}<br>
+        {{ batloform.batloval(size=32) }}
+        {{ batloform.submit()}}
+        </form>
+    </div>
+        <div class="widget">
+        <form action="" method="POST">
+        {{ bathiform.hidden_tag() }}
+        {{ bathiform.bathival.label }}<br>
+        {{ bathiform.bathival(size=32) }}
+        {{ bathiform.submit()}}
+        </form>
+    </div>
+    <div class="widget">
+        <form action="" method="POST">
+        {{ cmdform.hidden_tag() }}
+        {{ cmdform.cmdval.label }}<br>
+        {{ cmdform.cmdval(size=32) }}
+        {{ cmdform.submit()}}
+        </form>
+    </div>
+</div>
+<!--
+  <script>
+    function output1Update(vol){
+        document.querySelector('#out1').value=vol;
+    }
+    function output2Update(vol){
+        document.querySelector('#out2').value=vol;
+    }
+  </script>
+-->
+  </body>
+</html>

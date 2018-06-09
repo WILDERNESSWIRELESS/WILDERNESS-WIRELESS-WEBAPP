@@ -4,7 +4,6 @@ from time import sleep
 from forms import BatLoForm, BatHiForm, CmdForm
 import time
 import smbus
-#from smbus2 import SMBus, i2c_msg
 import RPi.GPIO as GPIO
 
 GPIO.setmode(GPIO.BCM)
@@ -12,75 +11,92 @@ GPIO.setup(26, GPIO.IN)
 GPIO.setup(19, GPIO.OUT)
 
 bus = smbus.SMBus(1)
-#bus = SMBus(1)
 
-eepromaddr = 0x50
+eepromaddr = 0x77
 
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'aassddff'
 
 @app.route('/', methods=['GET','POST'])
+
 def index():
+
     batloform = BatLoForm()
     bathiform = BatHiForm()
     cmdform   = CmdForm()
+
     if batloform.validate_on_submit():
         print(batloform.batloval.data)
         cmd1 = '{"batlo":"'+str(batloform.batloval.data)+'"}'
-        while GPIO.input(26):
-            print("Waiting...")
-        GPIO.output(19, GPIO.HIGH)
-        for c in cmd1:
-            bus.write_byte(0x77, ord(c))
-            sleep(.01)
-        GPIO.output(19, GPIO.LOW)
+        transmit(cmd1)
         return redirect('/')
+
     if bathiform.validate_on_submit():
         print(bathiform.bathival.data)
         cmd2 = '{"bathi":"'+str(bathiform.bathival.data)+'"}'
-        while GPIO.input(26):
-            print("Waiting...")
-        GPIO.output(19, GPIO.HIGH)
-        for c in cmd2:
-            bus.write_byte(0x77, ord(c))
-            sleep(.01)
-        GPIO.output(19, GPIO.LOW)
+        transmit(cmd2)
         return redirect('/')
+
     if cmdform.validate_on_submit():
         print(cmdform.cmdval.data)
         cmd3 = '{"cmd":"'+str(cmdform.cmdval.data)+'"}'
-        #for c in cmd3:
-        #    bus.write_byte(0x77, ord(c))
-        #    sleep(.01)
+        for c in cmd3:
+            bus.write_byte(0x77, ord(c))
+            sleep(.01)
         timeout = time.time()+5
         while GPIO.input(26):
             print("Waiting for I2C Bus")
             if time.time() > timeout:
                 break
         GPIO.output(19, GPIO.HIGH)
+        sleep(0.5)
         answer="NaN"
         word = "Empty"
         try:
-            #answer = bus.read_i2c_block_data(0x50, 0x00, 16)
-            for x in range(0,32):
-                answer = eeprom_read_byte(x)
+            #eeprom_set_current_address(0x00)
+            #answer = bus.read_byte(0x77)
+            answer = bus.read_i2c_block_data(0x77, 0x00, 10)
+            #word+=chr(answer)
+            #sleep(0.1)
+            #for x in range(0,16):
+                #answer = bus.read_byte(0x77)
                 #word += answer
-                print(answer)
+                #print(chr(answer))
+                #sleep(0.01)
             #bus.write_byte(0x50, 0x00)
             #answer = bus.read_byte(0x50)
             #answer = bus.read_byte_data(0x50, 0x00)
             #answer = bus.read_byte(0x77)
             #answer = i2c_msg.read(77,10)
             #bus.i2c_rdwr(answer)
+            #print("X")
         except:
-            print("OOPS!")
+            print("Error.")
         #for value in msg:
         #    print(value)
-        print(word)
+        #print(word)
+        #b=''.join(chr(answer))
+        #print(b)
+        print(str(bytearray(answer)))
         GPIO.output(19, GPIO.LOW)
         return redirect('/')
     return render_template('index.html', title='form', batloform=batloform, bathiform=bathiform, cmdform=cmdform)
+
+def transmit(msg):
+    timeout = time.time()+3
+    print("Waiting for bus")
+    while GPIO.input(26):
+        print ".",
+        if time.time() > timeout:
+            break
+    GPIO.output(19, GPIO.HIGH)
+    sleep(0.1)
+    for char in msg:
+        bus.write_byte(0x77, ord(char))
+        sleep(0.01)
+    GPIO.output(19, GPIO.LOW)
+
 
 def eeprom_set_current_address(addr):
     a1=addr/256
