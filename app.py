@@ -1,3 +1,4 @@
+
 from flask import Flask, render_template, redirect, jsonify, request
 from time import sleep
 from forms import BatLoForm, BatHiForm, CmdForm
@@ -49,7 +50,7 @@ def index():
         print cmd
         cmd3 = '{"cmd":"'+cmd+'"}'
         transmit(cmd3)
-        sleep(0.1)
+        #sleep(0.1)
         if(cmd  == "time"):
             print(receive(10))
         return redirect('/')
@@ -59,7 +60,7 @@ def transmit(msg):
     waitForBus(3)
     for char in msg:
         bus.write_byte(avraddr, ord(char))
-        sleep(0.01)
+        #sleep(0.01)
     GPIO.output(19, GPIO.LOW)
 
 def receive(numBytes):
