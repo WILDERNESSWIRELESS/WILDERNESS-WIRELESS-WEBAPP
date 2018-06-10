@@ -1,4 +1,3 @@
-
 from flask import Flask, render_template, redirect, jsonify, request
 from time import sleep
 from forms import BatLoForm, BatHiForm, CmdForm
@@ -9,6 +8,8 @@ import RPi.GPIO as GPIO
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(26, GPIO.IN)
 GPIO.setup(19, GPIO.OUT)
+GPIO.setup(12, GPIO.OUT)
+GPIO.output(12, GPIO.LOW)
 
 bus = smbus.SMBus(1)
 
@@ -50,27 +51,30 @@ def index():
         print cmd
         cmd3 = '{"cmd":"'+cmd+'"}'
         transmit(cmd3)
-        #sleep(0.1)
+        sleep(0.1)
         if(cmd  == "time"):
             print(receive(10))
         return redirect('/')
     return render_template('index.html', title='form', batloform=batloform, bathiform=bathiform, cmdform=cmdform)
 
 def transmit(msg):
-    waitForBus(3)
-    for char in msg:
-        bus.write_byte(avraddr, ord(char))
-        #sleep(0.01)
+    waitForBus(2)
+    try:
+        for char in msg:
+            bus.write_byte(avraddr, ord(char))
+            #sleep(0.01)
+    except ValueError:
+        print("Transmit Error.")
     GPIO.output(19, GPIO.LOW)
 
 def receive(numBytes):
     receivedBytes = None
     receivedMessage = None
-    waitForBus(3)
+    waitForBus(2)
     try:
         receivedBytes = bus.read_i2c_block_data(avraddr, 0x00, numBytes)
-    except:
-        print("Error.")
+    except ValueError:
+        print("Receive Error.")
     receivedMessage= str(bytearray(receivedBytes))
     GPIO.output(19, GPIO.LOW)
     return receivedMessage
@@ -80,9 +84,17 @@ def waitForBus(t):
     timeout = time.time()+t
     while GPIO.input(26):
         if time.time() > timeout:
+            print("Timeout.");
+            interruptAvr()
             break;
+    #sleep(0.1)
     GPIO.output(19, GPIO.HIGH)
-    sleep(0.1)
+    #sleep(0.1)
+
+def interruptAvr():
+    GPIO.output(12, GPIO.HIGH)
+    sleep(0.01)    
+    GPIO.output(12, GPIO.LOW)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
